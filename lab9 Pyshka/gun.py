@@ -1,5 +1,5 @@
 import math
-from random import choice
+from random import choice, randint
 
 import pygame
 
@@ -45,7 +45,12 @@ class Ball:
         self.x и self.y с учетом скоростей self.vx и self.vy, силы гравитации, действующей на мяч,
         и стен по краям окна (размер окна 800х600).
         """
-        # FIXME
+
+        if (self.x - self.r + self.vx <= 0) or (self.x + self.r + self.vx >= 800):
+            self.vx = -self.vx
+        if self.y + self.r - self.vy >= 600:
+            self.vy = -0.6*self.vy
+        self.vy = self.vy - 5/900
         self.x += self.vx
         self.y -= self.vy
 
@@ -126,9 +131,9 @@ class Target:
 
     def new_target(self):
         """ Инициализация новой цели. """
-        x = self.x = rnd(600, 780)
-        y = self.y = rnd(300, 550)
-        r = self.r = rnd(2, 50)
+        x = self.x = randint(600, 780)
+        y = self.y = randint(300, 550)
+        r = self.r = randint(2, 50)
         color = self.color = RED
 
     def hit(self, points=1):
