@@ -50,7 +50,7 @@ class Ball:
             self.vx = -self.vx
         if self.y + self.r - self.vy >= 500:
             self.vy = -0.4*self.vy
-        self.vy = self.vy - 5/9
+        self.vy = self.vy - 1
         self.x += self.vx
         self.y -= self.vy
 
@@ -71,9 +71,8 @@ class Ball:
             Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
         """
 
-        if (self.x - x)**2 + (self.y - y)**2 <= (self.r + r)**2:
+        if (self.x - t_x)**2 + (self.y - t_y)**2 <= (self.r + t_r)**2:
             return True
-            target.live -= 1
         else:
             return False
 
@@ -122,7 +121,8 @@ class Gun:
                 gun.targetting(event)
         pygame.draw.polygon(self.screen, self.color, [(40, 450),
                                                       (40 + length*math.cos(self.an), 450 - length*math.sin(self.an)),
-                                                      (40 + length*math.cos(self.an) + 7*math.sin(self.an), 450 - length*math.sin(self.an) - 7*math.cos(self.an)),
+                                                      (40 + length*math.cos(self.an) + 7*math.sin(self.an),
+                                                       450 - length*math.sin(self.an) - 7*math.cos(self.an)),
                                                       (40 + 7*math.sin(self.an), 450 - 7*math.cos(self.an))])
 
     def power_up(self):
@@ -138,16 +138,18 @@ class Target:
     def __init__(self):
         self.points = 0
         self.live = 1
-
+        self.x = 0
+        self.y = 0
+        self.r = 0
+        self.color = []
 
     def new_target(self):
         """ Инициализация новой цели. """
-        global x, y, r
-        x = self.x = randint(600, 780)
-        y = self.y = randint(300, 500)
-        r = self.r = randint(10, 50)
+        global t_x, t_y, t_r
+        t_x = self.x = randint(600, 780)
+        t_y = self.y = randint(300, 500)
+        t_r = self.r = randint(10, 50)
         color = self.color = RED
-
 
     def hit(self, points=1):
         """Попадание шарика в цель."""
@@ -158,10 +160,17 @@ class Target:
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.r)
 
 
+def score():
+    g = pygame.font.SysFont("comicsansms", 35)
+    value = g.render("Ваш счет:" + str(target.points), True, BLACK)
+    screen.blit(value, [100, 110])
+
+
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 bullet = 0
 balls = []
+
 
 clock = pygame.time.Clock()
 gun = Gun(screen)
@@ -175,6 +184,7 @@ while not finished:
     target.draw()
     for b in balls:
         b.draw()
+    score()
     pygame.display.update()
 
     clock.tick(FPS)
