@@ -55,6 +55,7 @@ class Ball:
         self.y -= self.vy
 
     def draw(self):
+        """Функция, отрисовавающая шарик в заданных координатах x, y и с заданным радиусом r."""
         pygame.draw.circle(
             self.screen,
             self.color,
@@ -78,6 +79,7 @@ class Ball:
 
 
 class Gun:
+   """Класс, отвечающий за отрисовку и функциональность пушки"""
     def __init__(self, screen):
         self.screen = screen
         self.f2_power = 10
@@ -86,6 +88,7 @@ class Gun:
         self.color = GREY
 
     def fire2_start(self, event):
+        """Функция срабатывает при удержании левой кнопки мыши, отвечает за начальную скорость мяча"""
         self.f2_on = 1
 
     def fire2_end(self, event):
@@ -115,15 +118,13 @@ class Gun:
             self.color = GREY
 
     def draw(self):
+        """Функция, отрисовывающая пушку в зависимости от положения мыши."""
         length = 10 + self.f2_power//3
         for event in pygame.event.get():
             if event.type == pygame.MOUSEMOTION:
                 gun.targetting(event)
-        pygame.draw.polygon(self.screen, self.color, [(40, 450),
-                                                      (40 + length*math.cos(self.an), 450 - length*math.sin(self.an)),
-                                                      (40 + length*math.cos(self.an) + 7*math.sin(self.an),
-                                                       450 - length*math.sin(self.an) - 7*math.cos(self.an)),
-                                                      (40 + 7*math.sin(self.an), 450 - 7*math.cos(self.an))])
+        pygame.draw.line(self.screen, self.color, (40, 450),
+                                                   (40 + length*math.cos(self.an), 450 - length*math.sin(self.an)), 7)
 
     def power_up(self):
         if self.f2_on:
@@ -135,6 +136,7 @@ class Gun:
 
 
 class Target:
+    """Класс, отрисовывающий мишень в случайной точке"""
     def __init__(self):
         self.points = 0
         self.live = 1
@@ -156,11 +158,14 @@ class Target:
         self.points += points
 
     def draw(self):
-        ...
+        """Функия, отрисовывающая мишень в сгенерированных координатах"""
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.r)
 
 
 def score():
+    """Функция, прибавляющая очки за попадания.
+    points - очки
+    """
     g = pygame.font.SysFont("comicsansms", 35)
     value = g.render("Ваш счет:" + str(target.points), True, BLACK)
     screen.blit(value, [100, 110])
