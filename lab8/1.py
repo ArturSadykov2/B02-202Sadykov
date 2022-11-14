@@ -5,6 +5,7 @@ pygame.init()
 
 FPS = 100
 screen = pygame.display.set_mode((1200, 700))
+k = 10            # Количество шариков на экране
 
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -16,13 +17,33 @@ WHITE = (255, 255, 255)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
 
+X = []
+Y = []
+R = []
+Vx = []
+Vy = []
+Color = []
+
+
 def new_ball(x, y, r, color):
-    """рисует новый шарик """
+    """Рисует новый шарик
+     x - координата центра x
+     y - координата центра y
+     r - радиус шарика
+     color - цвет
+     """
     circle(screen, color, (x, y), r)
 
 
 def click():
-    """Отвечает за считывание клика мышкой"""
+    """Отвечает за считывание клика мышкой и создание нового шарика взамен прокликанного
+    X - координата объекта по горизонтали
+    Y - координата объекта по вертикали
+    R - размер объекта
+    Vx - скорость объекта по горизонтали
+    Vy - скорость объекта по вертикали
+    k - количество шариков
+        """
     global points
     event.x = event.pos[0]
     event.y = event.pos[1]
@@ -54,44 +75,63 @@ def score(point):
     screen.blit(value, [100, 110])
 
 
-points = 0
-pygame.display.update()
-clock = pygame.time.Clock()
-finished = False
-X = []
-Y = []
-R = []
-Vx = []
-Vy = []
-Color = []
-k = 7
-s = False
-for j in range(k):
+def new_rect(x, y, r, color):
+    """Рисует новый квадрат
+     x - координата левого верхнего угла квадрата x
+     y - координата левого верхнего угла квадрата y
+     r - сторона квадрата
+     color - цвет
+     """
+    rect(screen, color, (x, y, r, r))
+
+
+def generate_start_positions():
+    """Функция генерирует массивы со стартовыми положениями, размерами и цветами для шариков и квадрата.
+    k - количество шариков, одновременно присутствующих на экране.
+    """
+    for j in range(k):
+        X.append(randint(100, 1000))
+        Y.append(randint(200, 600))
+        R.append(randint(10, 100))
+        Vx.append(randint(-5, 5))
+        Vy.append(randint(-5, 5))
+        Color.append(COLORS[randint(0, 5)])
     X.append(randint(100, 1000))
-    Y.append(randint(200, 600))
-    R.append(randint(10, 100))
-    Vx.append(randint(-5, 5))
-    Vy.append(randint(-5, 5))
+    Y.append(randint(200, 700))
+    R.append(randint(50, 100))
+    Vx.append(randint(-20, 20))
+    Vy.append(randint(-20, 20))
     Color.append(COLORS[randint(0, 5)])
-X.append(randint(100, 1000))
-Y.append(randint(200, 700))
-R.append(randint(50, 100))
-Vx.append(randint(-20, 20))
-Vy.append(randint(-20, 20))
-Color.append(COLORS[randint(0, 5)])
-while not finished:
-    screen.fill(WHITE)
-    score(points)
-    for j in range(k):
-        new_ball(X[j], Y[j], R[j], Color[j])
-    for j in range(k):
-        if (X[j] + R[j] + Vx[j] >= 1200) or (X[j] - R[j] + Vx[j] <= 0):
-            Vx[j] = -Vx[j]
-        if (Y[j] + R[j] + Vy[j] >= 700) or (Y[j] - R[j] + Vy[j] <= 0):
-            Vy[j] = -Vy[j]
-        X[j] += Vx[j]
-        Y[j] += Vy[j]
-    rect(screen, Color[k], (X[k], Y[k], R[k], R[k]))
+    return X, Y, R, Vx, Vy, Color
+
+
+def circle_move():
+    """Функция отвечает за движение шарика и отражение его от стенок
+    X - координата центра шарика по горизонтали
+    Y - координата центра шарика по вертикали
+    R - радиус шарика
+    Vx - скорость шарика по горизонтали
+    Vy - скорость шарика по вертикали
+    k - количество шариков
+    """
+    for h in range(k):
+        if (X[h] + R[h] + Vx[h] >= 1200) or (X[h] - R[h] + Vx[h] <= 0):
+            Vx[h] = -Vx[h]
+        if (Y[h] + R[h] + Vy[h] >= 700) or (Y[h] - R[h] + Vy[h] <= 0):
+            Vy[h] = -Vy[h]
+        X[h] += Vx[h]
+        Y[h] += Vy[h]
+    return X, Y, Vx, Vy
+
+
+def rect_move():
+    """Функция отвечает за движение шарика и отражение его от стенок
+        X - координата левого верхнего угла квадрата по горизонтали
+        Y - координата левого верхнего угла квадрата по вертикали
+        R - сторона квадрата
+        Vx - скорость квадрата по горизонтали
+        Vy - скорость квадрата по вертикали
+        """
     if (X[k] + R[k] + Vx[k] >= 1200) or (X[k] + Vx[k] <= 0):
         Vy[k] = Vy[k]*choice([-1, 1])
         Vx[k] = -Vx[k]
@@ -100,6 +140,24 @@ while not finished:
         Vy[k] = -Vy[k]
     X[k] += Vx[k]
     Y[k] += Vy[k]
+    return X, Y, Vx, Vy
+
+
+points = 0
+pygame.display.update()
+clock = pygame.time.Clock()
+finished = False
+
+generate_start_positions()
+
+while not finished:
+    screen.fill(WHITE)
+    for j in range(k):
+        new_ball(X[j], Y[j], R[j], Color[j])
+    new_rect(X[k], Y[k], R[k], Color[k])
+    circle_move()
+    rect_move()
+    score(points)
     pygame.display.update()
 
     clock.tick(FPS)
