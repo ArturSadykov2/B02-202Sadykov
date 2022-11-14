@@ -23,19 +23,38 @@ def new_ball(x, y, r, color):
 
 def click():
     """Отвечает за считывание клика мышкой"""
-    global score
+    global points
     event.x = event.pos[0]
     event.y = event.pos[1]
     for i in range(k):
         if (X[i]-event.x)**2 + (Y[i]-event.y)**2 <= R[i]**2:
-            score += 1
-            print(score)
+            points += 1
+            X[i] = randint(100, 1000)
+            Y[i] = randint(200, 600)
+            R[i] = randint(10, 100)
+            Vx[i] = randint(-5, 5)
+            Vy[i] = randint(-5, 5)
+            Color[i] = COLORS[randint(0, 5)]
     if (X[k] <= event.x) and (X[k] + R[k] >= event.x) and (Y[k] <= event.y) and (Y[k] + R[k] >= event.y):
-        score += 10
-        print(score)
+        points += 10
+        X[k] = randint(100, 1000)
+        Y[k] = randint(200, 600)
+        R[k] = randint(50, 100)
+        Vx[k] = randint(-20, 20)
+        Vy[k] = randint(-20, 20)
+        Color[k] = COLORS[randint(0, 5)]
 
 
-score = 0
+def score(point):
+    """Функция, прибавляющая очки за попадания.
+    score - очки
+    """
+    g = pygame.font.SysFont("comicsansms", 35)
+    value = g.render("Ваш счет:" + str(point), True, BLUE)
+    screen.blit(value, [100, 110])
+
+
+points = 0
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
@@ -45,7 +64,7 @@ R = []
 Vx = []
 Vy = []
 Color = []
-k = 3
+k = 7
 s = False
 for j in range(k):
     X.append(randint(100, 1000))
@@ -57,11 +76,12 @@ for j in range(k):
 X.append(randint(100, 1000))
 Y.append(randint(200, 700))
 R.append(randint(50, 100))
-Vx.append(randint(-5, 5))
-Vy.append(randint(-5, 5))
+Vx.append(randint(-20, 20))
+Vy.append(randint(-20, 20))
 Color.append(COLORS[randint(0, 5)])
 while not finished:
     screen.fill(WHITE)
+    score(points)
     for j in range(k):
         new_ball(X[j], Y[j], R[j], Color[j])
     for j in range(k):
