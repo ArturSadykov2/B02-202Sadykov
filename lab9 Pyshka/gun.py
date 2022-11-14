@@ -14,7 +14,7 @@ MAGENTA = 0xFF03B8
 CYAN = 0x00FFCC
 BLACK = (0, 0, 0)
 WHITE = 0xFFFFFF
-GREY = 0x7D7D7D
+GREY = (100, 100, 100)
 GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
 WIDTH = 800
@@ -79,8 +79,8 @@ class Ball:
 
 
 class Gun:
-   """Класс, отвечающий за отрисовку и функциональность пушки"""
-    def __init__(self, screen):
+    """Класс, отвечающий за отрисовку и функциональность пушки"""
+    def __init__(self, screen: pygame.Surface):
         self.screen = screen
         self.f2_power = 10
         self.f2_on = 0
