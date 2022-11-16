@@ -127,15 +127,12 @@ class Gun:
     def draw(self):
         """Функция, отрисовывающая пушку в зависимости от положения мыши."""
         length = 10 + self.f2_power//3
-        pygame.draw.line(screen, BLACK, (self.x - 25, self.y), (self.x + 25, self.y), 10)
         pygame.draw.circle(screen, BLACK, (self.x - 17, self.y + 13), 8)
         pygame.draw.circle(screen, BLACK, (self.x + 17, self.y + 13), 8)
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEMOTION:
-                gun.targetting(event)
         pygame.draw.line(self.screen, self.color, (self.x, self.y - 5),
                                                   (self.x + length*math.cos(self.an),
                                                    self.y - 5 - length*math.sin(self.an)), 9)
+        pygame.draw.line(screen, BLACK, (self.x - 25, self.y), (self.x + 25, self.y), 10)
 
     def power_up(self):
         if self.f2_on:
@@ -145,10 +142,12 @@ class Gun:
         else:
             self.color = GREY
 
-
-    def gun_move(self):
-        """"""
-
+    def gun_move(self, i):
+        """Движение пушки"""
+        if i.key == pygame.K_LEFT:
+            gun.x -= 8
+        elif i.key == pygame.K_RIGHT:
+            gun.x += 8
 
 
 class Target:
@@ -218,6 +217,8 @@ while not finished:
             gun.fire2_end(event)
         elif event.type == pygame.MOUSEMOTION:
             gun.targetting(event)
+        if event.type == pygame.KEYDOWN:
+            gun.gun_move(event)
 
     for b in balls:
         b.move()
