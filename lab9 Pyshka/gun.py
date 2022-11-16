@@ -22,7 +22,7 @@ HEIGHT = 600
 
 
 class Ball:
-    def __init__(self, screen: pygame.Surface, x=40, y=450):
+    def __init__(self, screen: pygame.Surface):
         """ Конструктор класса ball
 
         Args:
@@ -30,8 +30,8 @@ class Ball:
         y - начальное положение мяча по вертикали
         """
         self.screen = screen
-        self.x = x
-        self.y = y
+        self.x = gun.x
+        self.y = gun.y
         self.r = 10
         self.vx = 0
         self.vy = 0
@@ -48,9 +48,11 @@ class Ball:
 
         if self.x + self.r + self.vx >= 800:
             self.vx = -self.vx
-        if self.y + self.r - self.vy >= 500:
+        if self.y + self.r - self.vy >= 580:
             self.vy = -0.4*self.vy
-        self.vy = self.vy - 1
+            self.vx = self.vx//1.25
+        if self.y < 565:
+            self.vy = self.vy - 1
         self.x += self.vx
         self.y -= self.vy
 
@@ -80,12 +82,14 @@ class Ball:
 
 class Gun:
     """Класс, отвечающий за отрисовку и функциональность пушки"""
-    def __init__(self, screen: pygame.Surface):
+    def __init__(self, screen):
         self.screen = screen
         self.f2_power = 10
         self.f2_on = 0
         self.an = 1
         self.color = GREY
+        self.x = 40
+        self.y = 550
 
     def fire2_start(self, event):
         """Функция срабатывает при удержании левой кнопки мыши, отвечает за начальную скорость мяча"""
@@ -111,7 +115,10 @@ class Gun:
     def targetting(self, event):
         """Прицеливание. Зависит от положения мыши."""
         if event:
-            self.an = math.atan((-event.pos[1]+450) / (event.pos[0]-20))
+            if event.pos[0] != 20:
+                self.an = math.atan((-event.pos[1]+self.y) / (event.pos[0]-self.x))
+            else:
+                self.an = 180
         if self.f2_on:
             self.color = RED
         else:
@@ -120,11 +127,15 @@ class Gun:
     def draw(self):
         """Функция, отрисовывающая пушку в зависимости от положения мыши."""
         length = 10 + self.f2_power//3
+        pygame.draw.line(screen, BLACK, (self.x - 25, self.y), (self.x + 25, self.y), 10)
+        pygame.draw.circle(screen, BLACK, (self.x - 17, self.y + 13), 8)
+        pygame.draw.circle(screen, BLACK, (self.x + 17, self.y + 13), 8)
         for event in pygame.event.get():
             if event.type == pygame.MOUSEMOTION:
                 gun.targetting(event)
-        pygame.draw.line(self.screen, self.color, (40, 450),
-                                                   (40 + length*math.cos(self.an), 450 - length*math.sin(self.an)), 7)
+        pygame.draw.line(self.screen, self.color, (self.x, self.y - 5),
+                                                  (self.x + length*math.cos(self.an),
+                                                   self.y - 5 - length*math.sin(self.an)), 9)
 
     def power_up(self):
         if self.f2_on:
@@ -133,6 +144,11 @@ class Gun:
             self.color = RED
         else:
             self.color = GREY
+
+
+    def gun_move(self):
+        """"""
+
 
 
 class Target:
