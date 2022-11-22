@@ -3,7 +3,7 @@ from random import choice, randint
 
 import pygame
 
-
+k = 2
 FPS = 30
 
 RED = 0xFF0000
@@ -73,10 +73,13 @@ class Ball:
         Returns:
             Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
         """
-
-        if (self.x - t_x)**2 + (self.y - t_y)**2 <= (self.r + t_r)**2:
-            return True
-        else:
+        global i, k
+        s = False
+        for i in range(k):
+            if (self.x - target.x[i])**2 + (self.y - target.y[i])**2 <= (self.r + target.r[i])**2:
+                s = True
+                return True
+        if s is False:
             return False
 
 
@@ -158,18 +161,18 @@ class Target:
     def __init__(self):
         self.points = 0
         self.live = 1
-        self.x = 0
-        self.y = 0
-        self.r = 0
-        self.color = []
+        self.x = [0, 0]
+        self.y = [0, 0]
+        self.r = [0, 0]
+        self.color = [0, 0]
 
     def new_target(self):
         """ Инициализация новой цели. """
-        global t_x, t_y, t_r
-        t_x = self.x = randint(600, 780)
-        t_y = self.y = randint(300, 500)
-        t_r = self.r = randint(10, 50)
-        color = self.color = RED
+        global t_x, t_y, t_r, i
+        t_x = self.x[i] = randint(600, 780)
+        t_y = self.y[i] = randint(300, 500)
+        t_r = self.r[i] = randint(10, 50)
+        color = self.color[i] = RED
 
     def hit(self, points=1):
         """Попадание шарика в цель."""
@@ -177,7 +180,7 @@ class Target:
 
     def draw(self):
         """Функия, отрисовывающая мишень в сгенерированных координатах"""
-        pygame.draw.circle(screen, self.color, (self.x, self.y), self.r)
+        pygame.draw.circle(screen, self.color[i], (self.x[i], self.y[i]), self.r[i])
 
 
 def score():
@@ -199,12 +202,14 @@ clock = pygame.time.Clock()
 gun = Gun(screen)
 target = Target()
 finished = False
-target.new_target()
+for i in range(k):
+    target.new_target()
 
 while not finished:
     screen.fill(WHITE)
     gun.draw()
-    target.draw()
+    for i in range(2):
+        target.draw()
     for b in balls:
         b.draw()
     score()
