@@ -65,11 +65,10 @@ class Ball:
             self.r
         )
 
-    def hittest(self, obj):
+    def hittest(self):
         """Функция проверяет сталкивалкивается ли данный обьект с целью, описываемой в обьекте obj.
 
-        Args:
-            obj: Обьект, с которым проверяется столкновение.
+
         Returns:
             Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
         """
@@ -77,7 +76,6 @@ class Ball:
         s = False
         for i in range(k):
             if (self.x - target.x[i])**2 + (self.y - target.y[i])**2 <= (self.r + target.r[i])**2:
-                s = True
                 return True
         if s is False:
             return False
@@ -148,11 +146,11 @@ class Gun:
         else:
             self.color = GREY
 
-    def gun_move(self, i):
+    def gun_move(self, m):
         """Движение пушки"""
-        if i.key == pygame.K_LEFT:
+        if m.key == pygame.K_LEFT:
             gun.x -= 8
-        elif i.key == pygame.K_RIGHT:
+        elif m.key == pygame.K_RIGHT:
             gun.x += 8
 
 
@@ -168,11 +166,11 @@ class Target:
 
     def new_target(self):
         """ Инициализация новой цели. """
-        global t_x, t_y, t_r, i
-        t_x = self.x[i] = randint(600, 780)
-        t_y = self.y[i] = randint(300, 500)
-        t_r = self.r[i] = randint(10, 50)
-        color = self.color[i] = RED
+        global i
+        self.x[i] = randint(600, 780)
+        self.y[i] = randint(300, 500)
+        self.r[i] = randint(10, 50)
+        self.color[i] = RED
 
     def hit(self, points=1):
         """Попадание шарика в цель."""
@@ -230,7 +228,7 @@ while not finished:
 
     for b in balls:
         b.move()
-        if b.hittest(target) and target.live:
+        if b.hittest() and target.live:
             target.hit()
             target.new_target()
     gun.power_up()
